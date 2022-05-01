@@ -21,9 +21,7 @@ class User(db.Model):
     username = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
     bio = db.Column(db.String, nullable=True)
-    contactInfo = db.Column(db.String, nullable=True)
-    minPrice = db.Column(db.Integer, nullable=True)
-    maxPrice = db.Column(db.Integer, nullable=True)
+    price = db.Column(db.Integer, nullable=True)
     isAvailable = db.Column(db.Boolean, nullable=True)
     transactions = db.relationship("Transaction", cascade="delete")
     password_digest = db.Column(db.String, nullable=False)
@@ -39,9 +37,7 @@ class User(db.Model):
         self.username = kwargs.get("username")
         self.name = kwargs.get("name")
         self.bio = kwargs.get("bio")
-        self.contactInfo = kwargs.get("contactInfo")
-        self.minPrice = kwargs.get("minPrice")
-        self.maxPrice = kwargs.get("maxPrice")
+        self.price = kwargs.get("price")
         self.isAvailable = kwargs.get("isAvailable")
         self.password_digest = bcrypt.hashpw(kwargs.get("password").encode("utf8"), bcrypt.gensalt(rounds=13))
         
@@ -54,9 +50,7 @@ class User(db.Model):
             "username": self.username,
             "name": self.name,
             "bio": self.bio,
-            "contactInfo": self.contactInfo,
-            "minPrice": self.minPrice,
-            "maxPrice": self.maxPrice,
+            "price": self.price,
             "isAvailable": self.isAvailable,
             "subject": [s.serialize_subjects() for s in self.user_subject]
         }
@@ -70,22 +64,17 @@ class User(db.Model):
             "username": self.username,
             "name": self.name,
             "bio": self.bio,
-            "contactInfo": self.contactInfo,
-            "minPrice": self.minPrice,
-            "maxPrice": self.maxPrice,
+            "price": self.price,
             "isAvailable": self.isAvailable
         }
     
     def update_profile(self, **kwargs):
         """
-        Updating a Users object's column data, used for editing a user's profile
+        Updating a user's profile
         """
-        self.username = kwargs.get("username")
         self.name = kwargs.get("name")
         self.bio = kwargs.get("bio")
-        self.contactInfo = kwargs.get("contactInfo")
-        self.minPrice = kwargs.get("minPrice")
-        self.maxPrice = kwargs.get("maxPrice")
+        self.price = kwargs.get("price")
         self.isAvailable = kwargs.get("isAvailable")
         
     def _urlsafe_base_64(self):
@@ -160,7 +149,7 @@ class Subject(db.Model):
 
 
 class UserSubject(db.Model):
-    __tablename__ = "usersubject"
+    __tablename__ = "userSubject"
     id = db.Column(db.Integer, primary_key=True)    
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     subject_id = db.Column(db.Integer, db.ForeignKey("subjects.id"), nullable=False)
@@ -192,8 +181,8 @@ class Transaction(db.Model):
     """
     Transaction model
     """
-    __tablename__ = "txns"
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    __tablename__ = "transactions"
+    id = db.Column(db.Integer, primary_key = True)
     status = db.Column(db.String, nullable = False)
     sender_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
     receiver_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
