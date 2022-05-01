@@ -10,9 +10,9 @@ db = SQLAlchemy()
 
 # classes here
 
-class Users(db.Model):
+class User(db.Model):
     """
-    Users model
+    User model
     """
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key = True)
@@ -25,6 +25,7 @@ class Users(db.Model):
     minPrice = db.Column(db.Integer, nullable=True)
     maxPrice = db.Column(db.Integer, nullable=True)
     isAvailable = db.Column(db.Boolean, nullable=True)
+    transactions = db.relationship("Transaction", cascade="delete")
     password_digest = db.Column(db.String, nullable=False)
     # Session information
     session_token = db.Column(db.String, nullable=False, unique=True)
@@ -33,7 +34,7 @@ class Users(db.Model):
     
     def __init__(self, **kwargs):
         """
-        Initializes a Users object
+        Initializes a User object
         """
         self.username = kwargs.get("username")
         self.name = kwargs.get("name")
@@ -46,7 +47,7 @@ class Users(db.Model):
         
     def serialize(self):
         """
-        Serialize a Users object
+        Serialize a User object
         """
         return {
             "id": self.id,
@@ -125,7 +126,7 @@ class Users(db.Model):
         
     
     
-class Subjects(db.Model):    
+class Subject(db.Model):    
     __tablename__ = "subjects"    
     id = db.Column(db.Integer, primary_key=True)
     user_subject = db.relationship("UserSubject", back_populates="subject") 
@@ -133,13 +134,13 @@ class Subjects(db.Model):
     
     def __init__(self, **kwargs):
         """
-        Initializes a Subjects object
+        Initializes a Subject object
         """
         self.name = kwargs.get("name")
     
     def serialize(self):
         """
-        Serialize a Subjects object
+        Serialize a Subject object
         """
         return {
             "id": self.id,
@@ -149,7 +150,7 @@ class Subjects(db.Model):
         
     def sub_serialize(self):
         """
-        Sub-serialize a Subjects object
+        Sub-serialize a Subject object
         """
         return {
             "id": self.id,
@@ -163,12 +164,12 @@ class UserSubject(db.Model):
     id = db.Column(db.Integer, primary_key=True)    
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     subject_id = db.Column(db.Integer, db.ForeignKey("subjects.id"), nullable=False)
-    user = db.relationship("Users", back_populates="user_subject")
-    subject = db.relationship("Subjects", back_populates="user_subject")
+    user = db.relationship("User", back_populates="user_subject")
+    subject = db.relationship("Subject", back_populates="user_subject")
     
     def __init__(self, **kwargs):
         """
-        Initializes a UserSubjects object
+        Initializes a UserSubject object
         """
         self.user_id = kwargs.get('user_id')
         self.subject_id = kwargs.get('subject_id')
@@ -185,3 +186,33 @@ class UserSubject(db.Model):
         """
         return self.subject.sub_serialize()
     
+
+
+class Transaction(db.Model):
+    """
+    Transaction model
+    """
+    __tablename__ = "txns"
+    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    status = db.Column(db.String, nullable = False)
+    sender_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
+
+    def __init__(self, **kwargs):
+        """
+        Initializes a Transaction object
+        """
+        self.status = kwargs.get("status")
+        self.sender_id = kwargs.get("sender_id")
+        self.receiver_id = kwargs.get("receiver_id")
+
+    def serialize(self):
+        """
+        Serializes a Transaction object
+        """    
+        return {
+            "id": self.id,
+            "sender_id": self.sender_id,
+            "receiver_id": self.receiver_id,
+            "status": self.status
+        }
