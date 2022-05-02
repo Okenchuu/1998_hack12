@@ -45,6 +45,13 @@ class User(db.Model):
         """
         Serialize a User object
         """
+        send_ls = []
+        receive_ls = []
+        for t in self.transactions:
+            if t.sender_id == self.id:
+                send_ls.append(t.serialize())
+            else:
+                receive_ls.append(t.serialize())
         return {
             "id": self.id,
             "username": self.username,
@@ -53,7 +60,10 @@ class User(db.Model):
             "price": self.price,
             "isAvailable": self.isAvailable,
             "subject": [s.serialize_subjects() for s in self.user_subject],
-            "transactions": [t.serialize() for t in self.transactions]
+            "transactions": {
+                "send": send_ls,
+                "receive": receive_ls
+            }
         }
     
     def sub_serialize(self):
