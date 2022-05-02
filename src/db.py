@@ -52,7 +52,8 @@ class User(db.Model):
             "bio": self.bio,
             "price": self.price,
             "isAvailable": self.isAvailable,
-            "subject": [s.serialize_subjects() for s in self.user_subject]
+            "subject": [s.serialize_subjects() for s in self.user_subject],
+            "transactions": [t.serialize() for t in self.transactions]
         }
     
     def sub_serialize(self):
