@@ -18,12 +18,24 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     user_subject = db.relationship("UserSubject", back_populates="user")  
     # User information
-    username = db.Column(db.String, nullable=False)
+    username = db.Column(db.String, nullable=False, unique=True)
     name = db.Column(db.String, nullable=False)
     bio = db.Column(db.String, nullable=True)
     price = db.Column(db.Integer, nullable=True)
     isAvailable = db.Column(db.Boolean, nullable=True)
-    transactions = db.relationship("Transaction", cascade="delete")
+    sent_transactions = db.relationship(
+        "Transaction",
+        foreign_keys= '[transaction.c.sender_id]',
+        back_populates="sender",
+        cascade="all, delete",
+    )
+    received_transactions = db.relationship(
+        "Transaction",
+        foreign_keys= '[transaction.c.receiver_id]',
+        back_populates="receiver",
+        cascade="all, delete",
+    )
+    #transactions = db.relationship("Transaction", cascade="delete")
     password_digest = db.Column(db.String, nullable=False)
     # Session information
     session_token = db.Column(db.String, nullable=False, unique=True)
@@ -40,18 +52,12 @@ class User(db.Model):
         self.price = kwargs.get("price")
         self.isAvailable = kwargs.get("isAvailable")
         self.password_digest = bcrypt.hashpw(kwargs.get("password").encode("utf8"), bcrypt.gensalt(rounds=13))
+        self.renew_session()
         
     def serialize(self):
         """
         Serialize a User object
         """
-        send_ls = []
-        receive_ls = []
-        for t in self.transactions:
-            if t.sender_id == self.id:
-                send_ls.append(t.serialize())
-            else:
-                receive_ls.append(t.serialize())
         return {
             "id": self.id,
             "username": self.username,
@@ -60,10 +66,8 @@ class User(db.Model):
             "price": self.price,
             "isAvailable": self.isAvailable,
             "subject": [s.serialize_subjects() for s in self.user_subject],
-            "transactions": {
-                "send": send_ls,
-                "receive": receive_ls
-            }
+            "sent_transactions": [s.serialize() for s in self.sent_transactions],
+            "received_transactions": [s.serialize() for s in self.received_transactions]
         }
     
     def sub_serialize(self):
@@ -79,14 +83,13 @@ class User(db.Model):
             "isAvailable": self.isAvailable
         }
     
-    def update_profile(self, **kwargs):
+    def update_profile(self,bio, price, isAvailable):
         """
         Updating a user's profile
         """
-        self.name = kwargs.get("name")
-        self.bio = kwargs.get("bio")
-        self.price = kwargs.get("price")
-        self.isAvailable = kwargs.get("isAvailable")
+        self.bio = bio
+        self.price = price
+        self.isAvailable = isAvailable
         
     def _urlsafe_base_64(self):
         """
@@ -122,10 +125,39 @@ class User(db.Model):
         Verifies the update token of a user
         """
         return update_token == self.update_token
-        
-        
     
-    
+def create_user(username, name, bio, price, password, isAvailable):
+    """
+    Create a new user through register
+    """
+    existing_user = User.query.filter_by(username = username, name=name).first()
+    if existing_user:
+        return False, None
+    user = User(username = username, name = name, bio = bio, price = price, password=password, isAvailable=isAvailable)
+    db.session.add(user)
+    db.session.commit()
+    return True, user
+        
+def verify_credentials(username, password):
+    """
+    Verify credentials for logging in
+    """       
+    existing_user = User.query.filter_by(username = username).first()
+    if not existing_user:
+        return False, None
+    return existing_user.verify_password(password), existing_user
+
+def renew_session(update_token):
+    existing_user = User.query.filter_by(update_token = update_token).first()
+    if not existing_user:
+        return False, None
+    existing_user.renew_session()
+    db.session.commit()
+    return True, existing_user
+
+def verify_session(session_token):
+    return User.query.filter_by(session_token = session_token).first()
+
 class Subject(db.Model):    
     __tablename__ = "subject"    
     id = db.Column(db.Integer, primary_key=True)
@@ -197,8 +229,8 @@ class Transaction(db.Model):
     status = db.Column(db.String, nullable = False)
     sender_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
     receiver_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
-    sender = db.relationship("User", foreign_keys = [sender_id])
-    receiver = db.relationship("User", foreign_keys = [receiver_id])
+    sender = db.relationship("User", foreign_keys = [sender_id], back_populates="sent_transactions")
+    receiver = db.relationship("User", foreign_keys = [receiver_id], back_populates="received_transactions")
 
 
     def __init__(self, **kwargs):

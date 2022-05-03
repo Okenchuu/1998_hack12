@@ -1,8 +1,11 @@
 from zlib import DEF_BUF_SIZE
-from db import db, User, Subject, Transaction, UserSubject
+
+from sqlalchemy import false
+from db import db, User, Subject, Transaction, UserSubject, create_user, verify_credentials, renew_session, verify_session
 from flask import Flask, request
 import json
 import os
+
 
 app = Flask(__name__)
 db_filename = "tutor.db"
@@ -22,6 +25,13 @@ def success_response(data, code=200):
 def failure_response(message, code=404):
     return json.dumps({"error": message}), code
 
+def extract_token(request):
+    token = request.headers.get("Authorization")
+    if token is None:
+        return False, "Missing authorization header"
+    token = token.replace("Bearer","").strip()
+    return True, token
+
 # APIs
 @app.route("/")
 def hello_world():
@@ -30,11 +40,11 @@ def hello_world():
     """
     return json.dumps({"Status": "good"}), 200
 
-# 1. Get all subjects (GET /api/subjects/)
+# -- SUBJECT ------------------------------------------------------
 @app.route("/api/subjects/", methods=["GET"])
 def get_subjects():
     """
-    Endpoint of getting all subjects and users in each subject
+    Endpoint of getting all subjects id and names
     """
     return success_response(
         {
@@ -42,16 +52,24 @@ def get_subjects():
         }
     )
 
-# 2. Create a user (POST /api/users/)
-# {
-#     "username": "zw332",
+    
+@app.route("/api/subjects/<int:subject_id>/users/", methods=["GET"])
+def get_users_in_subject(subject_id):
+    """
+    Endpoint for getting all available tutors in a subject
+    """
+    subject = Subject.query.filter_by(id=subject_id).first()
+    if subject is None:
+        return failure_response("Subject not found!")
+    users = subject.serialize()["users"]
+    res = []
+    for user in users:
+        if bool(user.get("isAvailable")):
+            res.append(user)
+    return success_response(res)
 
-#     "name": "Zhan Wu" / null,
-#     "bio": "Senior major in Math" / null,
-#     "price": 10 / null,
-#     "subject": ["Math", "Econ", "Chemistry"] / null,
-#     "isAvailable": false / null
-# }
+
+# -- USER ------------------------------------------------------
 @app.route("/api/users/", methods=["POST"])
 def create_users():
     """
@@ -63,31 +81,170 @@ def create_users():
     bio = body.get("bio")
     price = body.get("price")
     subjects = body.get("subject")
-    isAvailable = body.get("isAvailable")
+    password = body.get("password")
+    isAvailable = bool(false)
 
     if username is None:
         return failure_response("Username cannot be empty!", 400)
+    if name is None:
+        return failure_response("name cannot be empty!", 400)
     
-    new_user = User(username = username, name = name, bio = bio, price = price, isAvailable = isAvailable)
-    db.session.add(new_user)
-    user_id = new_user.sub_serialize()['id']
+    created, user = create_user(username, name, bio, price, password, isAvailable)
+    if not created:
+        return failure_response("User already exist!", 403)
+    user_id = user.sub_serialize()['id']
+    
+    if subjects is not None:
+        for subject in subjects:
+            subject_id = -1
+            current_subject = Subject.query.filter_by(name = subject).first()
+            if current_subject is None:
+                new_subject = Subject(name = subject)
+                db.session.add(new_subject)
+                subject_id = new_subject.serialize()['id']
+            else:
+                subject_id = current_subject.serialize()['id']
+            new_user_subject = UserSubject(user_id = user_id, subject_id = subject_id)
+            db.session.add(new_user_subject)
+    
+    db.session.commit()
+    return success_response({
+        "session_token": user.session_token,
+        "session_expiration": str(user.session_expiration),
+        "update_token":user.update_token,
+        "user":user.serialize()
+    })
 
+  
+@app.route("/api/users/", methods=["GET"])
+def get_all_users():
+    """
+    Endpoint of getting all users
+    """
+    users = [u.serialize() for u in User.query.all()]
+    return success_response({"users":users})
+
+
+@app.route("/api/users/<int:user_id>/")
+def get_user_by_id(user_id):
+    """
+    Endpoint for getting a specific user by id
+    """
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        return failure_response("User not found!")
+    return success_response(user.serialize())
+
+
+@app.route("/api/users/<int:user_id>/", methods=["POST"])
+def update_user_by_id(user_id):
+    """
+    Endpoint for updating a specific user's profile by id
+    """
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        return failure_response("User not found!")
+    
+    body = json.loads(request.data)
+    bio = body.get("bio")
+    price = body.get("price")
+    subjects = body.get("subject")
+    isAvailable = bool(body.get("isAvailable"))
+    if bio is None or price is None or subjects is None or isAvailable is None:
+        return failure_response("user info input missing", 400)
+    
+    user.update_profile(bio, price, isAvailable)
+    user_subject = UserSubject.query.filter_by(user_id=user_id)
+    for us in user_subject:
+        db.session.delete(us)
+    db.session.commit()    
+ 
     for subject in subjects:
         subject_id = -1
         current_subject = Subject.query.filter_by(name = subject).first()
         if current_subject is None:
             new_subject = Subject(name = subject)
             db.session.add(new_subject)
-            subject_id = new_subject.serialize()['id']
+            db.session.commit()
+            subject_id = new_subject.sub_serialize()['id']                    
         else:
-            subject_id = current_subject.serialize()['id']
+            subject_id = current_subject.sub_serialize()['id']
         new_user_subject = UserSubject(user_id = user_id, subject_id = subject_id)
         db.session.add(new_user_subject)
-    
     db.session.commit()
-    return success_response(
-        new_user.serialize(), 201
-    )
+    return success_response(user.serialize())
+
+
+
+@app.route("/api/users/<int:user_id>/", methods=["DELETE"])
+def delete_user(user_id):
+    """
+    Endpoint for deleting a specific user by id
+    """
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        return failure_response("User not found!")
+    user_subject = UserSubject.query.filter_by(user_id=user_id)
+    res = user.serialize()
+    for uc in user_subject:
+        db.session.delete(uc)
+    db.session.delete(user)
+    db.session.commit()
+    return success_response(res)
+
+
+
+# -- AUTHENTICATION ------------------------------------------------------
+@app.route("/api/login/", methods=["POST"])
+def login():
+    """
+    Endpoint of logging in
+    """
+    body = json.loads(request.data)
+    username = body.get("username")
+    password = body.get("password")
+    if username is None or password is None:
+        return failure_response("Invalid username or password!", 400)
+    valid_creds, user = verify_credentials(username, password)
+    
+    if not valid_creds:
+        return failure_response("Invalid username or password!")
+    return success_response({
+        "session_token": user.session_token,
+        "session_expiration": str(user.session_expiration),
+        "update_token":user.update_token
+    })
+    
+@app.route("/api/session/", methods=["POST"])
+def update_session():
+    """
+    Endpoint of updating session
+    """
+    success, update_token = extract_token(request)
+    if not success:
+        return failure_response(update_token)
+    valid, user = renew_session(update_token)
+    if not valid:
+        return failure_response("Invalid update token")
+    return success_response({
+        "session_token": user.session_token,
+        "session_expiration": str(user.session_expiration),
+        "update_token":user.update_token
+    })
+
+@app.route("/api/secret/", methods=["GET"])
+def secret_message():
+    """
+    Endpoint of updating session
+    """
+    success, session_token = extract_token(request)
+    if not success:
+        return failure_response(session_token)
+    valid = verify_session(session_token)
+    if not valid:
+        return failure_response("Invalid session token")
+    return success_response("Hello World")  
+      
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

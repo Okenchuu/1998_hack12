@@ -17,12 +17,9 @@
 // Request:
 {
     "username": "zw332",
-
     "name": "Zhan Wu" / null,
     "bio": "Senior major in Math" / null,
-    "contactInfo": "zw332@cornell.edu" / null,
-    "minPrice": 10 / null,
-    "maxPrice": 15 / null,
+    "price": 10 / null,
     "subject": ["Math", "Econ", "Chemistry"] / null,
     "isAvailable": false / null
 }
@@ -30,16 +27,25 @@
 {
     "id": 1,
     "username": "zw332",
-
     "name": "Zhan Wu" / null,
     "bio": "Senior major in Math" / null,
-    "contactInfo": "zw332@cornell.edu" / null,
-    "minPrice": 10 / null,
-    "maxPrice": 15 / null,
+    "price": 10 / null,
     "subject": ["Math", "Econ", "Chemistry"] / null,
     "isAvailable": false / null
 }
 
+
+// 2. Get a user by id (GET /api/users/<int:user_id>/)
+// Response: <HTTP STATUS CODE 200>
+{
+    "id": 1,
+    "username": "zw332",
+    "name": "Zhan Wu" / null,
+    "bio": "Senior major in Math" / null,
+    "price": 10 / null,
+    "subject": ["Math", "Econ", "Chemistry"] / null,
+    "isAvailable": false / null
+}
 
 // 3. Edit a user (POST /api/users/{userId}/)
 // Request:
@@ -47,9 +53,7 @@
     "username": "zw332",
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
-    "contactInfo": "zw332@cornell.edu",
-    "minPrice": 15,
-    "maxPrice": 15,
+    "price": 10 / null,
     "subject": ["Math", "Econ"],
     "isAvailable": true
 }
@@ -59,15 +63,13 @@
     "username": "zw332",
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
-    "contactInfo": "zw332@cornell.edu",
-    "minPrice": 15,
-    "maxPrice": 15,
+    "price": 10 / null,
     "subject": ["Math", "Econ"],
     "isAvailable": true
 }
 
 
-// 4. Get all available mentors given a subject (GET /api/users/{subjectId}/)
+// 4. Get all available mentors given a subject (GET /api/subjects/<int:subject_id>/users/)
 // Response: <HTTP STATUS CODE 200>
 {
     "users": [
@@ -76,9 +78,7 @@
             "username": "zw332",
             "name": "Zhan Wu",
             "bio": "Senior major in Math",
-            "contactInfo": "zw332@cornell.edu",
-            "minPrice": 15,
-            "maxPrice": 15,
+            "price": 10 / null,
             "subject": ["Math", "Econ"],
             "isAvailable": true 
         }, 
@@ -87,9 +87,7 @@
             "username": "xz348",
             "name": "Xiying Zhang",
             "bio": "Junior major in CS",
-            "contactInfo": "xz348@cornell.edu",
-            "minPrice": 17,
-            "maxPrice": 20,
+            "price": 10 / null,
             "subject": ["CS"],
             "isAvailable": true 
         }
@@ -104,9 +102,7 @@
     "username": "zw332",
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
-    "contactInfo": "zw332@cornell.edu",
-    "minPrice": 15,
-    "maxPrice": 15,
+    "price": 15,
     "subject": ["Math", "Econ"],
     "isAvailable": true,
     "transactions": [
@@ -193,7 +189,7 @@
 }
 
 
-// 7. A user sends a request to a mentor (POST /api/transactions/)
+// 7. A user sends a request to a tutor (POST /api/transactions/)
 // Request:
 {
     "senderId": 1,
@@ -209,7 +205,7 @@
 }
 
 
-// 8. Mentor accept/decline an incoming tutor request (POST /api/transactions/{id}/)
+// 8. Tutor accept/decline an incoming request (POST /api/transactions/{id}/)
 // Request: 
 {
     "status": "decline"
