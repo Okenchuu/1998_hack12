@@ -19,7 +19,7 @@ class User(db.Model):
     user_subject = db.relationship("UserSubject", back_populates="user")  
     # User information
     username = db.Column(db.String, nullable=False, unique=True)
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=True)
     bio = db.Column(db.String, nullable=True)
     price = db.Column(db.Integer, nullable=True)
     isAvailable = db.Column(db.Boolean, nullable=True)

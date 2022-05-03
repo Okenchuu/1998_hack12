@@ -80,14 +80,16 @@ def create_users():
     name = body.get("name")
     bio = body.get("bio")
     price = body.get("price")
-    subjects = body.get("subject")
+    subjects = body.get("subjects")
     password = body.get("password")
     isAvailable = bool(false)
-
-    if username is None:
+    if username is None or name is None or bio is None or price is None or subjects is None or password is None:
+        return failure_response("user info input missing", 400)
+    
+    if len(username) == 0:
         return failure_response("Username cannot be empty!", 400)
-    if name is None:
-        return failure_response("name cannot be empty!", 400)
+    if  len(password) == 0:
+        return failure_response("password cannot be empty!", 400)
     
     created, user = create_user(username, name, bio, price, password, isAvailable)
     if not created:
