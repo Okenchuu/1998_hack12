@@ -1,0 +1,223 @@
+// 1. Get all subjects (GET /api/subjects/)
+// Response: <HTTP STATUS CODE 200>
+{
+    "subjects": [
+        {
+            "id": 1,
+            "name": "Math"
+        }, 
+        {
+            "id": 2,
+            "name": "Econ"
+        }
+    ]
+}
+
+// 2. Create a user (POST /api/users/)
+// Request:
+{
+    "username": "zw332",
+
+    "name": "Zhan Wu" / null,
+    "bio": "Senior major in Math" / null,
+    "contactInfo": "zw332@cornell.edu" / null,
+    "minPrice": 10 / null,
+    "maxPrice": 15 / null,
+    "subject": ["Math", "Econ", "Chemistry"] / null,
+    "isAvailable": false / null
+}
+// Response: <HTTP STATUS CODE 201>
+{
+    "id": 1,
+    "username": "zw332",
+
+    "name": "Zhan Wu" / null,
+    "bio": "Senior major in Math" / null,
+    "contactInfo": "zw332@cornell.edu" / null,
+    "minPrice": 10 / null,
+    "maxPrice": 15 / null,
+    "subject": ["Math", "Econ", "Chemistry"] / null,
+    "isAvailable": false / null
+}
+
+
+// 3. Edit a user (POST /api/users/{userId}/)
+// Request:
+{
+    "username": "zw332",
+    "name": "Zhan Wu",
+    "bio": "Senior major in Math",
+    "contactInfo": "zw332@cornell.edu",
+    "minPrice": 15,
+    "maxPrice": 15,
+    "subject": ["Math", "Econ"],
+    "isAvailable": true
+}
+// Response: <HTTP STATUS CODE 201>
+{
+    "id": 1,
+    "username": "zw332",
+    "name": "Zhan Wu",
+    "bio": "Senior major in Math",
+    "contactInfo": "zw332@cornell.edu",
+    "minPrice": 15,
+    "maxPrice": 15,
+    "subject": ["Math", "Econ"],
+    "isAvailable": true
+}
+
+
+// 4. Get all available mentors given a subject (GET /api/users/{subjectId}/)
+// Response: <HTTP STATUS CODE 200>
+{
+    "users": [
+        {
+            "id": 1,
+            "username": "zw332",
+            "name": "Zhan Wu",
+            "bio": "Senior major in Math",
+            "contactInfo": "zw332@cornell.edu",
+            "minPrice": 15,
+            "maxPrice": 15,
+            "subject": ["Math", "Econ"],
+            "isAvailable": true 
+        }, 
+        {
+            "id": 2,
+            "username": "xz348",
+            "name": "Xiying Zhang",
+            "bio": "Junior major in CS",
+            "contactInfo": "xz348@cornell.edu",
+            "minPrice": 17,
+            "maxPrice": 20,
+            "subject": ["CS"],
+            "isAvailable": true 
+        }
+    ]
+}
+
+
+// 5. Delete a user (DELETE /api/users/{id}/)
+// Response: <HTTP STATUS CODE 200>
+{
+    "id": 1,
+    "username": "zw332",
+    "name": "Zhan Wu",
+    "bio": "Senior major in Math",
+    "contactInfo": "zw332@cornell.edu",
+    "minPrice": 15,
+    "maxPrice": 15,
+    "subject": ["Math", "Econ"],
+    "isAvailable": true,
+    "transactions": [
+        {
+            "send": [
+                {
+                    "id": 1,
+                    "receiverId": 3,
+                    "status": "accepted"
+                }, 
+                {
+                    "id": 2,
+                    "receiverId": 5,
+                    "status": "declined"
+                },
+                {
+                    "id": 5,
+                    "receiverId": 2,
+                    "status": "pending"
+                }
+            ], 
+            "receive": [
+                {
+                    "id": 3,
+                    "senderId": 7,
+                    "status": "accepted"
+                }, 
+                {
+                    "id": 4,
+                    "senderId": 6,
+                    "status": "declined"
+                },
+                {
+                    "id": 5,
+                    "senderId": 9,
+                    "status": "pending"
+                }
+            ]
+        }
+    ]
+}
+
+
+// 6. Get all sent transactions and received transactions of a user (GET /api/users/{id}/transactions/)
+// Response: <HTTP STATUS CODE 200>
+{
+    "id": 1,
+    "username": "zw332",
+    "name": "Zhan Wu",
+    "send": [
+        {
+            "id": 1,
+            "receiverId": 3,
+            "status": "accepted"
+        }, 
+        {
+            "id": 2,
+            "receiverId": 5,
+            "status": "declined"
+        },
+        {
+            "id": 5,
+            "receiverId": 2,
+            "status": "pending"
+        }
+    ], 
+    "receive": [
+        {
+            "id": 3,
+            "senderId": 7,
+            "status": "accepted"
+        }, 
+        {
+            "id": 4,
+            "senderId": 6,
+            "status": "declined"
+        },
+        {
+            "id": 5,
+            "senderId": 9,
+            "status": "pending"
+        }
+    ]
+}
+
+
+// 7. A user sends a request to a mentor (POST /api/transactions/)
+// Request:
+{
+    "senderId": 1,
+    "receiverId": 2,
+    "status": "pending"
+}
+// Response: <HTTP STATUS CODE 201>
+{
+    "id": 2,
+    "senderId": 1,
+    "receiverId": 2,
+    "status": "pending"
+}
+
+
+// 8. Mentor accept/decline an incoming tutor request (POST /api/transactions/{id}/)
+// Request: 
+{
+    "status": "decline"
+}
+// <HTTP STATUS CODE 201>
+{
+    "id": 2,
+    "senderId": 1,
+    "receiverId": 2,
+    "status": "declined"
+}

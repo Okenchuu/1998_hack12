@@ -14,7 +14,7 @@ class User(db.Model):
     """
     User model
     """
-    __tablename__ = "users"
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key = True)
     user_subject = db.relationship("UserSubject", back_populates="user")  
     # User information
@@ -127,7 +127,7 @@ class User(db.Model):
     
     
 class Subject(db.Model):    
-    __tablename__ = "subjects"    
+    __tablename__ = "subject"    
     id = db.Column(db.Integer, primary_key=True)
     user_subject = db.relationship("UserSubject", back_populates="subject") 
     name = db.Column(db.String, nullable=False)
@@ -162,8 +162,8 @@ class Subject(db.Model):
 class UserSubject(db.Model):
     __tablename__ = "userSubject"
     id = db.Column(db.Integer, primary_key=True)    
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    subject_id = db.Column(db.Integer, db.ForeignKey("subjects.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
     user = db.relationship("User", back_populates="user_subject")
     subject = db.relationship("Subject", back_populates="user_subject")
     
@@ -192,11 +192,14 @@ class Transaction(db.Model):
     """
     Transaction model
     """
-    __tablename__ = "transactions"
+    __tablename__ = "transaction"
     id = db.Column(db.Integer, primary_key = True)
     status = db.Column(db.String, nullable = False)
-    sender_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
-    receiver_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
+    sender_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
+    sender = db.relationship("User", foreign_keys = [sender_id])
+    receiver = db.relationship("User", foreign_keys = [receiver_id])
+
 
     def __init__(self, **kwargs):
         """
