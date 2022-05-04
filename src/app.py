@@ -151,10 +151,7 @@ def update_user_by_id(user_id):
     
     user.update_profile(bio, price, isAvailable)
     user.subjects = []
-    db.session.commit()   
-    # Math, Econ, Physics
-    # [Math, Econ, Physics]
-    # [Math] 
+    db.session.commit()
  
     for subject in subjects:
             current_subject = Subject.query.filter_by(name = subject).first()

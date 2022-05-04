@@ -227,33 +227,3 @@ class Transaction(db.Model):
             "receiver_id": self.receiver_id,
             "status": self.status
         }
-
-# class UserSubject(db.Model):
-#     __tablename__ = "userSubject"
-#     id = db.Column(db.Integer, primary_key=True)    
-#     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-#     subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
-#     user = db.relationship("User", back_populates="user_subject")
-#     subject = db.relationship("Subject", back_populates="user_subject")
-    
-#     def __init__(self, **kwargs):
-#         """
-#         Initializes a UserSubject object
-#         """
-#         self.user_id = kwargs.get('user_id')
-#         self.subject_id = kwargs.get('subject_id')
-    
-#     def serialize_users(self):
-#         """
-#         Serialize the user column
-#         """
-#         return self.user.sub_serialize()
-
-#     def serialize_subjects(self):
-#         """
-#         Serialize the subject column
-#         """
-#         return self.subject.sub_serialize()
-    
-
-
