@@ -10,13 +10,19 @@ db = SQLAlchemy()
 
 # classes here
 
+userSubject_table = db.Table(
+    "userSubject",
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
+    db.Column("subject_id", db.Integer, db.ForeignKey("subject.id"))
+)
+
 class User(db.Model):
     """
     User model
     """
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key = True)
-    user_subject = db.relationship("UserSubject", back_populates="user")  
+    subjects = db.relationship("Subject", secondary = userSubject_table, back_populates="users")  
     # User information
     username = db.Column(db.String, nullable=False, unique=True)
     name = db.Column(db.String, nullable=True)
@@ -35,7 +41,6 @@ class User(db.Model):
         back_populates="receiver",
         cascade="all, delete",
     )
-    #transactions = db.relationship("Transaction", cascade="delete")
     password_digest = db.Column(db.String, nullable=False)
     # Session information
     session_token = db.Column(db.String, nullable=False, unique=True)
@@ -65,7 +70,7 @@ class User(db.Model):
             "bio": self.bio,
             "price": self.price,
             "isAvailable": self.isAvailable,
-            "subject": [s.serialize_subjects() for s in self.user_subject],
+            "subject": [s.sub_serialize() for s in self.subjects],
             "sent_transactions": [s.serialize() for s in self.sent_transactions],
             "received_transactions": [s.serialize() for s in self.received_transactions]
         }
@@ -130,10 +135,10 @@ def create_user(username, name, bio, price, password, isAvailable):
     """
     Create a new user through register
     """
-    existing_user = User.query.filter_by(username = username, name=name).first()
+    existing_user = User.query.filter_by(username = username).first()
     if existing_user:
         return False, None
-    user = User(username = username, name = name, bio = bio, price = price, password=password, isAvailable=isAvailable)
+    user = User(username = username, name = name, bio = bio, price = price, password = password, isAvailable = isAvailable)
     db.session.add(user)
     db.session.commit()
     return True, user
@@ -161,7 +166,7 @@ def verify_session(session_token):
 class Subject(db.Model):    
     __tablename__ = "subject"    
     id = db.Column(db.Integer, primary_key=True)
-    user_subject = db.relationship("UserSubject", back_populates="subject") 
+    users = db.relationship("User", secondary = userSubject_table, back_populates="subjects")
     name = db.Column(db.String, nullable=False)
     
     def __init__(self, **kwargs):
@@ -177,7 +182,7 @@ class Subject(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "users": [s.serialize_users() for s in self.user_subject]  
+            "users": [s.sub_serialize() for s in self.users]  
         }
         
     def sub_serialize(self):
@@ -189,35 +194,6 @@ class Subject(db.Model):
             "name": self.name
         }
 
-
-
-class UserSubject(db.Model):
-    __tablename__ = "userSubject"
-    id = db.Column(db.Integer, primary_key=True)    
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
-    user = db.relationship("User", back_populates="user_subject")
-    subject = db.relationship("Subject", back_populates="user_subject")
-    
-    def __init__(self, **kwargs):
-        """
-        Initializes a UserSubject object
-        """
-        self.user_id = kwargs.get('user_id')
-        self.subject_id = kwargs.get('subject_id')
-    
-    def serialize_users(self):
-        """
-        Serialize the user column
-        """
-        return self.user.sub_serialize()
-
-    def serialize_subjects(self):
-        """
-        Serialize the subject column
-        """
-        return self.subject.sub_serialize()
-    
 
 
 class Transaction(db.Model):
@@ -251,3 +227,33 @@ class Transaction(db.Model):
             "receiver_id": self.receiver_id,
             "status": self.status
         }
+
+# class UserSubject(db.Model):
+#     __tablename__ = "userSubject"
+#     id = db.Column(db.Integer, primary_key=True)    
+#     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+#     subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
+#     user = db.relationship("User", back_populates="user_subject")
+#     subject = db.relationship("Subject", back_populates="user_subject")
+    
+#     def __init__(self, **kwargs):
+#         """
+#         Initializes a UserSubject object
+#         """
+#         self.user_id = kwargs.get('user_id')
+#         self.subject_id = kwargs.get('subject_id')
+    
+#     def serialize_users(self):
+#         """
+#         Serialize the user column
+#         """
+#         return self.user.sub_serialize()
+
+#     def serialize_subjects(self):
+#         """
+#         Serialize the subject column
+#         """
+#         return self.subject.sub_serialize()
+    
+
+

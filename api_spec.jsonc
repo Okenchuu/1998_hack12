@@ -21,7 +21,8 @@
     "bio": "Senior major in Math" / null,
     "price": 10 / null,
     "subject": ["Math", "Econ", "Chemistry"] / null,
-    "isAvailable": false / null
+    "isAvailable": false / null,
+    "password": "aaaaa"
 }
 // Response: <HTTP STATUS CODE 201>
 {
@@ -35,7 +36,7 @@
 }
 
 
-// 2. Get a user by id (GET /api/users/<int:user_id>/)
+// 3. Get a user by id (GET /api/users/<int:user_id>/)
 // Response: <HTTP STATUS CODE 200>
 {
     "id": 1,
@@ -47,7 +48,7 @@
     "isAvailable": false / null
 }
 
-// 3. Edit a user (POST /api/users/{userId}/)
+// 4. Edit a user (POST /api/users/{userId}/)
 // Request:
 {
     "username": "zw332",
@@ -69,7 +70,7 @@
 }
 
 
-// 4. Get all available mentors given a subject (GET /api/subjects/<int:subject_id>/users/)
+// 5. Get all available mentors given a subject (GET /api/subjects/<int:subject_id>/users/)
 // Response: <HTTP STATUS CODE 200>
 {
     "users": [
@@ -95,7 +96,7 @@
 }
 
 
-// 5. Delete a user (DELETE /api/users/{id}/)
+// 6. Delete a user (DELETE /api/users/{id}/)
 // Response: <HTTP STATUS CODE 200>
 {
     "id": 1,
@@ -146,7 +147,7 @@
 }
 
 
-// 6. Get all sent transactions and received transactions of a user (GET /api/users/{id}/transactions/)
+// 7. Get all sent transactions and received transactions of a user (GET /api/users/{id}/transactions/)
 // Response: <HTTP STATUS CODE 200>
 {
     "id": 1,
@@ -155,65 +156,88 @@
     "send": [
         {
             "id": 1,
-            "receiverId": 3,
-            "status": "accepted"
+            "receiverId": 3
         }, 
         {
             "id": 2,
-            "receiverId": 5,
-            "status": "declined"
+            "receiverId": 5
         },
         {
             "id": 5,
-            "receiverId": 2,
-            "status": "pending"
+            "receiverId": 2
         }
     ], 
     "receive": [
         {
             "id": 3,
-            "senderId": 7,
-            "status": "accepted"
+            "senderId": 7
         }, 
         {
             "id": 4,
-            "senderId": 6,
-            "status": "declined"
+            "senderId": 6
         },
         {
             "id": 5,
-            "senderId": 9,
-            "status": "pending"
+            "senderId": 9
         }
     ]
 }
 
 
-// 7. A user sends a request to a tutor (POST /api/transactions/)
+// 8. A user sends a request to a tutor (POST /api/transactions/)
 // Request:
 {
     "senderId": 1,
-    "receiverId": 2,
-    "status": "pending"
+    "receiverId": 2
 }
 // Response: <HTTP STATUS CODE 201>
 {
     "id": 2,
     "senderId": 1,
-    "receiverId": 2,
-    "status": "pending"
+    "receiverId": 2
 }
 
 
-// 8. Tutor accept/decline an incoming request (POST /api/transactions/{id}/)
+
+// 10. Login (POST /api/login/)
+// Request:
+{
+    "username": "zzzzz",
+    "password": "aaaaa"
+}
+// <HTTP STATUS CODE 200>
+// Respond:
+{
+    "session_token": "935556ce055087e0ca7ea753d8909f08c55c0d2e",
+    "session_expiration": "2022-05-05 00:09:45.526060",
+    "update_token": "24b47f53e4d2575093589dd1fde995bd0e7af4ae"
+}
+
+
+// 11. update_session (POST /api/session/)
 // Request: 
 {
-    "status": "decline"
+    "Headers": {
+        "KEY": "Authorization",
+        "VALUE": "Bearer fe3d69ad51497777fc8f1eff7302fc4118afb492"
+    }
 }
-// <HTTP STATUS CODE 201>
+// <HTTP STATUS CODE 200>
+// Respond:
 {
-    "id": 2,
-    "senderId": 1,
-    "receiverId": 2,
-    "status": "declined"
+    "session_token": "935556ce055087e0ca7ea753d8909f08c55c0d2e",
+    "session_expiration": "2022-05-05 00:09:45.526060",
+    "update_token": "24b47f53e4d2575093589dd1fde995bd0e7af4ae"
 }
+
+// 12. secret_message (GET /api/secret/)
+// Request:
+{
+    "Headers": {
+        "KEY": "Authorization",
+        "VALUE": "Bearer fe3d69ad51497777fc8f1eff7302fc4118afb492"
+    }
+}
+// <HTTP STATUS CODE 200>
+// Respond:
+"Hello World"

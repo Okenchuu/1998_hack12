@@ -1,7 +1,7 @@
 from zlib import DEF_BUF_SIZE
 
 from sqlalchemy import false
-from db import db, User, Subject, Transaction, UserSubject, create_user, verify_credentials, renew_session, verify_session
+from db import db, User, Subject, Transaction, create_user, verify_credentials, renew_session, verify_session
 from flask import Flask, request
 import json
 import os
@@ -88,33 +88,27 @@ def create_users():
     
     if len(username) == 0:
         return failure_response("Username cannot be empty!", 400)
-    if  len(password) == 0:
+    if len(password) == 0:
         return failure_response("password cannot be empty!", 400)
     
     created, user = create_user(username, name, bio, price, password, isAvailable)
     if not created:
         return failure_response("User already exist!", 403)
-    user_id = user.sub_serialize()['id']
-    
+
     if subjects is not None:
         for subject in subjects:
-            subject_id = -1
             current_subject = Subject.query.filter_by(name = subject).first()
             if current_subject is None:
-                new_subject = Subject(name = subject)
-                db.session.add(new_subject)
-                subject_id = new_subject.serialize()['id']
-            else:
-                subject_id = current_subject.serialize()['id']
-            new_user_subject = UserSubject(user_id = user_id, subject_id = subject_id)
-            db.session.add(new_user_subject)
-    
+                current_subject = Subject(name = subject)
+                db.session.add(current_subject)
+            user.subjects.append(current_subject)    
+
     db.session.commit()
     return success_response({
         "session_token": user.session_token,
         "session_expiration": str(user.session_expiration),
-        "update_token":user.update_token,
-        "user":user.serialize()
+        "update_token": user.update_token,
+        "user": user.serialize()
     })
 
   
@@ -156,23 +150,18 @@ def update_user_by_id(user_id):
         return failure_response("user info input missing", 400)
     
     user.update_profile(bio, price, isAvailable)
-    user_subject = UserSubject.query.filter_by(user_id=user_id)
-    for us in user_subject:
-        db.session.delete(us)
-    db.session.commit()    
+    user.subjects = []
+    db.session.commit()   
+    # Math, Econ, Physics
+    # [Math, Econ, Physics]
+    # [Math] 
  
     for subject in subjects:
-        subject_id = -1
-        current_subject = Subject.query.filter_by(name = subject).first()
-        if current_subject is None:
-            new_subject = Subject(name = subject)
-            db.session.add(new_subject)
-            db.session.commit()
-            subject_id = new_subject.sub_serialize()['id']                    
-        else:
-            subject_id = current_subject.sub_serialize()['id']
-        new_user_subject = UserSubject(user_id = user_id, subject_id = subject_id)
-        db.session.add(new_user_subject)
+            current_subject = Subject.query.filter_by(name = subject).first()
+            if current_subject is None:
+                current_subject = Subject(name = subject)
+                db.session.add(current_subject)
+            user.subjects.append(current_subject) 
     db.session.commit()
     return success_response(user.serialize())
 
@@ -186,10 +175,7 @@ def delete_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user is None:
         return failure_response("User not found!")
-    user_subject = UserSubject.query.filter_by(user_id=user_id)
     res = user.serialize()
-    for uc in user_subject:
-        db.session.delete(uc)
     db.session.delete(user)
     db.session.commit()
     return success_response(res)
@@ -237,7 +223,7 @@ def update_session():
 @app.route("/api/secret/", methods=["GET"])
 def secret_message():
     """
-    Endpoint of updating session
+    Endpoint of secret message
     """
     success, session_token = extract_token(request)
     if not success:
