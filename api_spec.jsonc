@@ -4,11 +4,11 @@
     "subjects": [
         {
             "id": 1,
-            "name": "Math"
+            "name": "MATH"
         }, 
         {
             "id": 2,
-            "name": "Econ"
+            "name": "ECON"
         }
     ]
 }
@@ -20,7 +20,7 @@
     "name": "Zhan Wu" / null,
     "bio": "Senior major in Math" / null,
     "price": 10 / null,
-    "subject": ["Math", "Econ", "Chemistry"] / null,
+    "subjects": ["Math", "Econ"] / null,
     "isAvailable": false / null,
     "password": "aaaaa"
 }
@@ -31,8 +31,19 @@
     "name": "Zhan Wu" / null,
     "bio": "Senior major in Math" / null,
     "price": 10 / null,
-    "subject": ["Math", "Econ", "Chemistry"] / null,
-    "isAvailable": false / null
+    "isAvailable": false / null,
+    "subjects": [
+        {
+            "id": 1,
+            "name": "MATH"
+        }, 
+        {
+            "id": 2,
+            "name": "ECON"
+        }
+    ] / null,
+    "sent_transactions": [],
+    "received_transactions": []
 }
 
 
@@ -44,8 +55,19 @@
     "name": "Zhan Wu" / null,
     "bio": "Senior major in Math" / null,
     "price": 10 / null,
-    "subject": ["Math", "Econ", "Chemistry"] / null,
-    "isAvailable": false / null
+    "isAvailable": false / null,
+    "subjects": [
+        {
+            "id": 1,
+            "name": "MATH"
+        }, 
+        {
+            "id": 2,
+            "name": "ECON"
+        }
+    ] / null,
+    "sent_transactions": [],
+    "received_transactions": []
 }
 
 // 4. Edit a user (POST /api/users/{userId}/)
@@ -55,7 +77,7 @@
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
     "price": 10 / null,
-    "subject": ["Math", "Econ"],
+    "subjects": ["MATH", "ECON", "CHEM"],
     "isAvailable": true
 }
 // Response: <HTTP STATUS CODE 201>
@@ -65,8 +87,23 @@
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
     "price": 10 / null,
-    "subject": ["Math", "Econ"],
-    "isAvailable": true
+    "isAvailable": true,
+    "subjects": [
+        {
+            "id": 1,
+            "name": "MATH"
+        }, 
+        {
+            "id": 2,
+            "name": "ECON"
+        },
+        {
+            "id": 3,
+            "name": "CHEM"
+        }
+    ] / null,
+    "sent_transactions": [],
+    "received_transactions": []
 }
 
 
@@ -80,7 +117,6 @@
             "name": "Zhan Wu",
             "bio": "Senior major in Math",
             "price": 10 / null,
-            "subject": ["Math", "Econ"],
             "isAvailable": true 
         }, 
         {
@@ -89,7 +125,6 @@
             "name": "Xiying Zhang",
             "bio": "Junior major in CS",
             "price": 10 / null,
-            "subject": ["CS"],
             "isAvailable": true 
         }
     ]
@@ -104,97 +139,99 @@
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
     "price": 15,
-    "subject": ["Math", "Econ"],
     "isAvailable": true,
-    "transactions": [
-        {
-            "send": [
-                {
-                    "id": 1,
-                    "receiverId": 3,
-                    "status": "accepted"
-                }, 
-                {
-                    "id": 2,
-                    "receiverId": 5,
-                    "status": "declined"
-                },
-                {
-                    "id": 5,
-                    "receiverId": 2,
-                    "status": "pending"
-                }
-            ], 
-            "receive": [
-                {
-                    "id": 3,
-                    "senderId": 7,
-                    "status": "accepted"
-                }, 
-                {
-                    "id": 4,
-                    "senderId": 6,
-                    "status": "declined"
-                },
-                {
-                    "id": 5,
-                    "senderId": 9,
-                    "status": "pending"
-                }
-            ]
-        }
-    ]
-}
-
-
-// 7. Get all sent transactions and received transactions of a user (GET /api/users/{id}/transactions/)
-// Response: <HTTP STATUS CODE 200>
-{
-    "id": 1,
-    "username": "zw332",
-    "name": "Zhan Wu",
-    "send": [
+    "subjects": [
         {
             "id": 1,
-            "receiverId": 3
+            "name": "MATH"
         }, 
         {
             "id": 2,
-            "receiverId": 5
+            "name": "ECON"
+        }
+    ] / null,
+    "sent_transactions": [
+        {
+            "id": 1,
+            "sender_id": 1,
+            "sender_name": "Zhan Wu",
+            "sender_username": "zw332",
+            "receiver_id": 2,
+            "receiver_name": "Charlotte Ding"
         },
         {
-            "id": 5,
-            "receiverId": 2
+            "id": 2,
+            "sender_id": 1,
+            "sender_name": "Zhan Wu",
+            "sender_username": "zw332",
+            "receiver_id": 3,
+            "receiver_name": "Julia Zeng"
         }
-    ], 
-    "receive": [
+    ],
+    "received_transactions": [
         {
             "id": 3,
-            "senderId": 7
-        }, 
-        {
-            "id": 4,
-            "senderId": 6
-        },
-        {
-            "id": 5,
-            "senderId": 9
+            "sender_id": 3,
+            "sender_name": "Julia Zeng",
+            "sender_username": "jwz28",
+            "receiver_id": 1,
+            "receiver_name": "Zhan Wu"
         }
     ]
 }
+
+
+// // 7. Get all sent transactions and received transactions of a user (GET /api/users/{id}/transactions/)
+// // Response: <HTTP STATUS CODE 200>
+// {
+//     "id": 1,
+//     "username": "zw332",
+//     "name": "Zhan Wu",
+//     "send": [
+//         {
+//             "id": 1,
+//             "receiverId": 3
+//         }, 
+//         {
+//             "id": 2,
+//             "receiverId": 5
+//         },
+//         {
+//             "id": 5,
+//             "receiverId": 2
+//         }
+//     ], 
+//     "receive": [
+//         {
+//             "id": 3,
+//             "senderId": 7
+//         }, 
+//         {
+//             "id": 4,
+//             "senderId": 6
+//         },
+//         {
+//             "id": 5,
+//             "senderId": 9
+//         }
+//     ]
+// }
 
 
 // 8. A user sends a request to a tutor (POST /api/transactions/)
 // Request:
 {
-    "senderId": 1,
-    "receiverId": 2
+    "sender_id": 1,
+    "receiver_id": 2
 }
 // Response: <HTTP STATUS CODE 201>
 {
     "id": 2,
-    "senderId": 1,
-    "receiverId": 2
+    "sender_id": 1,
+    "sender_name": "Julia Zeng",
+    "sender_username": "jwz28",
+    "receiver_id": 2,
+    "receiver_name": "Charlotte Ding"
 }
 
 

@@ -44,7 +44,7 @@ def hello_world():
 @app.route("/api/subjects/", methods=["GET"])
 def get_subjects():
     """
-    Endpoint of getting all subjects id and names
+    Endpoint of getting all subjects' id and names
     """
     return success_response(
         {
@@ -89,11 +89,11 @@ def create_users():
     if len(username) == 0:
         return failure_response("Username cannot be empty!", 400)
     if len(password) == 0:
-        return failure_response("password cannot be empty!", 400)
+        return failure_response("Password cannot be empty!", 400)
     
     created, user = create_user(username, name, bio, price, password, isAvailable)
     if not created:
-        return failure_response("User already exist!", 403)
+        return failure_response("User already exists!", 403)
 
     if subjects is not None:
         for subject in subjects:
@@ -109,7 +109,7 @@ def create_users():
         "session_expiration": str(user.session_expiration),
         "update_token": user.update_token,
         "user": user.serialize()
-    })
+    }, 201)
 
   
 @app.route("/api/users/", methods=["GET"])
@@ -118,7 +118,7 @@ def get_all_users():
     Endpoint of getting all users
     """
     users = [u.serialize() for u in User.query.all()]
-    return success_response({"users":users})
+    return success_response({"users": users})
 
 
 @app.route("/api/users/<int:user_id>/")
@@ -144,7 +144,7 @@ def update_user_by_id(user_id):
     body = json.loads(request.data)
     bio = body.get("bio")
     price = body.get("price")
-    subjects = body.get("subject")
+    subjects = body.get("subjects")
     isAvailable = bool(body.get("isAvailable"))
     if bio is None or price is None or subjects is None or isAvailable is None:
         return failure_response("user info input missing", 400)
@@ -160,7 +160,7 @@ def update_user_by_id(user_id):
                 db.session.add(current_subject)
             user.subjects.append(current_subject) 
     db.session.commit()
-    return success_response(user.serialize())
+    return success_response(user.serialize(), 201)
 
 
 
@@ -177,6 +177,20 @@ def delete_user(user_id):
     db.session.commit()
     return success_response(res)
 
+
+@app.route("/api/transactions/", methods=["POST"])
+def send_request():
+    body = json.loads(request.data)
+    sender_id = body.get("sender_id")
+    receiver_id = body.get("receiver_id")
+    if sender_id is None or receiver_id is None:
+        return failure_response("Sender or receiver ID is missing", 400)
+
+    txn = Transaction(sender_id = sender_id, receiver_id = receiver_id)
+    db.session.add(txn)
+    db.session.commit()
+
+    return success_response(txn.serialize(), 201)
 
 
 # -- AUTHENTICATION ------------------------------------------------------

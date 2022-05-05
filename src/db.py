@@ -70,14 +70,14 @@ class User(db.Model):
             "bio": self.bio,
             "price": self.price,
             "isAvailable": self.isAvailable,
-            "subject": [s.sub_serialize() for s in self.subjects],
+            "subjects": [s.sub_serialize() for s in self.subjects],
             "sent_transactions": [s.serialize() for s in self.sent_transactions],
             "received_transactions": [s.serialize() for s in self.received_transactions]
         }
     
     def sub_serialize(self):
         """
-        Sub-serialize a Users object
+        Sub-serialize a User object
         """
         return {
             "id": self.id,
@@ -88,7 +88,8 @@ class User(db.Model):
             "isAvailable": self.isAvailable
         }
     
-    def update_profile(self,bio, price, isAvailable):
+    
+    def update_profile(self, bio, price, isAvailable):
         """
         Updating a user's profile
         """
@@ -202,7 +203,7 @@ class Transaction(db.Model):
     """
     __tablename__ = "transaction"
     id = db.Column(db.Integer, primary_key = True)
-    status = db.Column(db.String, nullable = False)
+    # status = db.Column(db.String, nullable = False)
     sender_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
     receiver_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
     sender = db.relationship("User", foreign_keys = [sender_id], back_populates="sent_transactions")
@@ -213,17 +214,20 @@ class Transaction(db.Model):
         """
         Initializes a Transaction object
         """
-        self.status = kwargs.get("status")
+        # self.status = kwargs.get("status")
         self.sender_id = kwargs.get("sender_id")
         self.receiver_id = kwargs.get("receiver_id")
 
     def serialize(self):
         """
         Serializes a Transaction object
-        """    
+        """ 
         return {
             "id": self.id,
             "sender_id": self.sender_id,
+            "sender_name": self.sender.name,
+            "sender_username": self.sender.username,
             "receiver_id": self.receiver_id,
-            "status": self.status
+            "receiver_name": self.receiver.name
+            # "status": self.status
         }
