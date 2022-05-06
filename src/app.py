@@ -85,7 +85,7 @@ def create_users():
     isAvailable = bool(false)
     if username is None or name is None or bio is None or price is None or subjects is None or password is None:
         return failure_response("user info input missing", 400)
-    
+
     if len(username) == 0:
         return failure_response("Username cannot be empty!", 400)
     if len(password) == 0:
@@ -212,6 +212,26 @@ def login():
         "session_token": user.session_token,
         "session_expiration": str(user.session_expiration),
         "update_token":user.update_token
+    })
+
+@app.route("/api/login/", methods=["POST"])
+def simpleLogin():
+    """
+    Endpoint of simply logging in
+    """
+    body = json.loads(request.data)
+    username = body.get("username")
+    password = body.get("password")
+    if username is None or password is None:
+        return failure_response("Invalid username or password!", 400)
+    valid_creds, user = verify_credentials(username, password)
+    
+    if not valid_creds:
+        return failure_response("Invalid username or password!")
+    
+    user_id = User.query.filter_by(username = username).first()
+    return success_response({
+        "userId": user_id
     })
     
 @app.route("/api/session/", methods=["POST"])

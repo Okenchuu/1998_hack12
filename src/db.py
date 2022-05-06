@@ -221,13 +221,13 @@ class Transaction(db.Model):
     def serialize(self):
         """
         Serializes a Transaction object
-        """ 
+        """
         return {
             "id": self.id,
             "sender_id": self.sender_id,
-            "sender_name": self.sender.name,
-            "sender_username": self.sender.username,
             "receiver_id": self.receiver_id,
-            "receiver_name": self.receiver.name
-            # "status": self.status
+            "sender_name": self.sender.sub_serialize()['name'],
+            "receiver_name": self.receiver.sub_serialize()['name'],
+            "sender_username": self.sender.sub_serialize()['username'],
+            "receiver_username": self.receiver.sub_serialize()['username']
         }

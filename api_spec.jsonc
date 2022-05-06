@@ -19,7 +19,7 @@
     "username": "zw332",
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
-    "price": 10 / null,
+    "price": 10,
     "subjects": ["MATH", "ECON"],
     "isAvailable": false,
     "password": "aaaaa"
@@ -58,7 +58,7 @@
     "username": "zw332",
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
-    "price": 10 / null,
+    "price": 10,
     "isAvailable": false,
     "subjects": [
         {
@@ -80,7 +80,7 @@
     "username": "zw332",
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
-    "price": 10 / null,
+    "price": 10,
     "subjects": ["MATH", "ECON", "CHEM"],
     "isAvailable": true
 }
@@ -120,7 +120,7 @@
             "username": "zw332",
             "name": "Zhan Wu",
             "bio": "Senior major in Math",
-            "price": 10 / null,
+            "price": 10,
             "isAvailable": true 
         }, 
         {
@@ -128,7 +128,7 @@
             "username": "xz348",
             "name": "Xiying Zhang",
             "bio": "Junior major in CS",
-            "price": 10 / null,
+            "price": 10,
             "isAvailable": true 
         }
     ]
@@ -142,7 +142,7 @@
     "username": "zw332",
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
-    "price": 15 / null,
+    "price": 15,
     "isAvailable": true,
     "subjects": [
         {
