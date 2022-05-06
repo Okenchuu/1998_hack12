@@ -208,7 +208,9 @@ def login():
     
     if not valid_creds:
         return failure_response("Invalid username or password!")
+    user_id = User.query.filter_by(username = username).first()
     return success_response({
+        "userId": user_id,
         "session_token": user.session_token,
         "session_expiration": str(user.session_expiration),
         "update_token":user.update_token
