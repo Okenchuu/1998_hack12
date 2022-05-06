@@ -17,45 +17,49 @@
 // Request:
 {
     "username": "zw332",
-    "name": "Zhan Wu" / null,
-    "bio": "Senior major in Math" / null,
+    "name": "Zhan Wu",
+    "bio": "Senior major in Math",
     "price": 10 / null,
-    "subjects": ["Math", "Econ"] / null,
-    "isAvailable": false / null,
+    "subjects": ["MATH", "ECON"],
+    "isAvailable": false,
     "password": "aaaaa"
 }
 // Response: <HTTP STATUS CODE 201>
 {
-    "id": 1,
-    "username": "zw332",
-    "name": "Zhan Wu" / null,
-    "bio": "Senior major in Math" / null,
-    "price": 10 / null,
-    "isAvailable": false / null,
-    "subjects": [
-        {
-            "id": 1,
-            "name": "MATH"
-        }, 
-        {
-            "id": 2,
-            "name": "ECON"
-        }
-    ] / null,
-    "sent_transactions": [],
-    "received_transactions": []
+    "session_token": "ea0c90f98c6435621f1a5c19533ee15160c0c9d3",
+    "session_expiration": "2022-05-07 02:51:28.784776",
+    "update_token": "59ed21dc26a7ccb44fdaed4463f2f9d3a9b6c144",
+    "user": {
+        "id": 1,
+        "username": "jwz28",
+        "name": "Julia Zeng",
+        "bio": "freshman in CS",
+        "price": 10,
+        "isAvailable": false,
+        "subjects": [
+            {
+                "id": 1,
+                "name": "MATH"
+            },
+            {
+                "id": 2,
+                "name": "CS"
+            }
+        ],
+        "sent_transactions": [],
+        "received_transactions": []
+    }
 }
-
 
 // 3. Get a user by id (GET /api/users/<int:user_id>/)
 // Response: <HTTP STATUS CODE 200>
 {
     "id": 1,
     "username": "zw332",
-    "name": "Zhan Wu" / null,
-    "bio": "Senior major in Math" / null,
+    "name": "Zhan Wu",
+    "bio": "Senior major in Math",
     "price": 10 / null,
-    "isAvailable": false / null,
+    "isAvailable": false,
     "subjects": [
         {
             "id": 1,
@@ -65,7 +69,7 @@
             "id": 2,
             "name": "ECON"
         }
-    ] / null,
+    ],
     "sent_transactions": [],
     "received_transactions": []
 }
@@ -86,7 +90,7 @@
     "username": "zw332",
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
-    "price": 10 / null,
+    "price": 10,
     "isAvailable": true,
     "subjects": [
         {
@@ -101,7 +105,7 @@
             "id": 3,
             "name": "CHEM"
         }
-    ] / null,
+    ],
     "sent_transactions": [],
     "received_transactions": []
 }
@@ -138,7 +142,7 @@
     "username": "zw332",
     "name": "Zhan Wu",
     "bio": "Senior major in Math",
-    "price": 15,
+    "price": 15 / null,
     "isAvailable": true,
     "subjects": [
         {
@@ -149,7 +153,7 @@
             "id": 2,
             "name": "ECON"
         }
-    ] / null,
+    ],
     "sent_transactions": [
         {
             "id": 1,
@@ -181,44 +185,8 @@
 }
 
 
-// // 7. Get all sent transactions and received transactions of a user (GET /api/users/{id}/transactions/)
-// // Response: <HTTP STATUS CODE 200>
-// {
-//     "id": 1,
-//     "username": "zw332",
-//     "name": "Zhan Wu",
-//     "send": [
-//         {
-//             "id": 1,
-//             "receiverId": 3
-//         }, 
-//         {
-//             "id": 2,
-//             "receiverId": 5
-//         },
-//         {
-//             "id": 5,
-//             "receiverId": 2
-//         }
-//     ], 
-//     "receive": [
-//         {
-//             "id": 3,
-//             "senderId": 7
-//         }, 
-//         {
-//             "id": 4,
-//             "senderId": 6
-//         },
-//         {
-//             "id": 5,
-//             "senderId": 9
-//         }
-//     ]
-// }
 
-
-// 8. A user sends a request to a tutor (POST /api/transactions/)
+// 7. A user sends a request to a tutor (POST /api/transactions/)
 // Request:
 {
     "sender_id": 1,
@@ -236,14 +204,14 @@
 
 
 
-// 10. Login (POST /api/login/)
+// 8. Login (POST /api/login/)
 // Request:
 {
     "username": "zzzzz",
     "password": "aaaaa"
 }
 // <HTTP STATUS CODE 200>
-// Respond:
+// Response:
 {
     "session_token": "935556ce055087e0ca7ea753d8909f08c55c0d2e",
     "session_expiration": "2022-05-05 00:09:45.526060",
@@ -251,7 +219,7 @@
 }
 
 
-// 11. update_session (POST /api/session/)
+// 9. update_session (POST /api/session/)
 // Request: 
 {
     "Headers": {
@@ -260,14 +228,14 @@
     }
 }
 // <HTTP STATUS CODE 200>
-// Respond:
+// Response:
 {
     "session_token": "935556ce055087e0ca7ea753d8909f08c55c0d2e",
     "session_expiration": "2022-05-05 00:09:45.526060",
     "update_token": "24b47f53e4d2575093589dd1fde995bd0e7af4ae"
 }
 
-// 12. secret_message (GET /api/secret/)
+// 10. secret_message (GET /api/secret/)
 // Request:
 {
     "Headers": {
@@ -276,5 +244,5 @@
     }
 }
 // <HTTP STATUS CODE 200>
-// Respond:
+// Response:
 "Hello World"
