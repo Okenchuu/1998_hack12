@@ -216,7 +216,7 @@ def login():
         "update_token":user.update_token
     })
 
-@app.route("/api/login/", methods=["POST"])
+@app.route("/api/simplelogin/", methods=["POST"])
 def simpleLogin():
     """
     Endpoint of simply logging in
@@ -229,9 +229,10 @@ def simpleLogin():
     valid_creds, user = verify_credentials(username, password)
     
     if not valid_creds:
-        return failure_response("Invalid username or password!")
+        return failure_response("Incorrect username or password!")
     
-    user_id = User.query.filter_by(username = username).first()
+    user = User.query.filter_by(username = username).first()
+    user_id = user.id
     return success_response({
         "userId": user_id
     })

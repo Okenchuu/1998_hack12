@@ -203,7 +203,6 @@ class Transaction(db.Model):
     """
     __tablename__ = "transaction"
     id = db.Column(db.Integer, primary_key = True)
-    # status = db.Column(db.String, nullable = False)
     sender_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
     receiver_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable = False)
     sender = db.relationship("User", foreign_keys = [sender_id], back_populates="sent_transactions")
@@ -214,7 +213,6 @@ class Transaction(db.Model):
         """
         Initializes a Transaction object
         """
-        # self.status = kwargs.get("status")
         self.sender_id = kwargs.get("sender_id")
         self.receiver_id = kwargs.get("receiver_id")
 

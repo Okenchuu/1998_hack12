@@ -218,8 +218,20 @@
     "update_token": "24b47f53e4d2575093589dd1fde995bd0e7af4ae"
 }
 
+// 9. Simple Login (POST /api/simplelogin/)
+// Request:
+{
+    "username": "zzzzz",
+    "password": "aaaaa"
+}
+// <HTTP STATUS CODE 200>
+// Response:
+{
+    "userId": 1
+}
 
-// 9. update_session (POST /api/session/)
+
+// 10. update_session (POST /api/session/)
 // Request: 
 {
     "Headers": {
@@ -235,7 +247,7 @@
     "update_token": "24b47f53e4d2575093589dd1fde995bd0e7af4ae"
 }
 
-// 10. secret_message (GET /api/secret/)
+// 11. secret_message (GET /api/secret/)
 // Request:
 {
     "Headers": {
