@@ -1,3 +1,3 @@
 # Team 12 Hack Challenge SP22 
-DockerHub: https://hub.docker.com/repository/docker/juliazeng23/hackchallenge
+DockerHub: https://hub.docker.com/repository/docker/juliazeng23/hackchallenge <br />
 External VM IP: http://34.130.167.204
