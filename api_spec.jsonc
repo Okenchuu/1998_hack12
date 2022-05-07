@@ -113,26 +113,24 @@
 
 // 5. Get all available mentors given a subject (GET /api/subjects/<int:subject_id>/users/)
 // Response: <HTTP STATUS CODE 200>
-{
-    "users": [
-        {
-            "id": 1,
-            "username": "zw332",
-            "name": "Zhan Wu",
-            "bio": "Senior major in Math",
-            "price": 10,
-            "isAvailable": true 
-        }, 
-        {
-            "id": 2,
-            "username": "xz348",
-            "name": "Xiying Zhang",
-            "bio": "Junior major in CS",
-            "price": 10,
-            "isAvailable": true 
-        }
-    ]
-}
+[
+    {
+        "id": 1,
+        "username": "zw332",
+        "name": "Zhan Wu",
+        "bio": "Senior major in Math",
+        "price": 10,
+        "isAvailable": true 
+    }, 
+    {
+        "id": 2,
+        "username": "xz348",
+        "name": "Xiying Zhang",
+        "bio": "Junior major in CS",
+        "price": 10,
+        "isAvailable": true 
+    }
+]
 
 
 // 6. Delete a user (DELETE /api/users/{id}/)
