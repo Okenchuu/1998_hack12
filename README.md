@@ -298,5 +298,5 @@ There are 3 Models and 1 association table in our database.
 ### Association Table: userSubject_table
 #### Resolve Many-to-Many relationship between the User model and the Subject model
 #### Columns and Relationships:
-**user_id**: The user id referring the User model's id as foreign key.<br />
-**subject_id**: The subject id referring the Subject model's id as foreign key.<br />
+**user_id** (int): The user id referring the User model's id as foreign key.<br />
+**subject_id** (int): The subject id referring the Subject model's id as foreign key.<br />
